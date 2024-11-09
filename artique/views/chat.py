@@ -47,7 +47,7 @@ def save_chat():
             db.session.add(gpt_chat)
             db.session.commit()
 
-        return jsonify({'message': 'Chat saved and processed successfully'}), 201
+        return jsonify({'message': gpt_response}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
