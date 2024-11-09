@@ -8,7 +8,7 @@ from artique.s3upload import upload_file_to_s3
 
 bp = Blueprint('picture', __name__, url_prefix='/picture')
 
-@bp.route('/create/', methods=['POST'])
+@bp.route('/create', methods=['POST'])
 @jwt_required()
 def create():
     print("Create start")
@@ -28,14 +28,18 @@ def create():
         if photo_file:
             photo_file_url = upload_file_to_s3(photo_file, current_app.config["S3_BUCKET_NAME"], folder="pictures")
 
+        # 날짜 변환
+        start_date = datetime.strptime(request.form.get("start_date"), '%Y-%m-%d %H:%M')
+        end_date = datetime.strptime(request.form.get("end_date"), '%Y-%m-%d %H:%M')
+
         # Picture 인스턴스 생성
         picture = Picture(
             user_id=user.id,
             name=request.form.get("name"),
             artist=request.form.get("artist"),
             gallery=request.form.get("gallery"),
-            start_date=request.form.get("start_date"),
-            end_date=request.form.get("end_date"),
+            start_date=start_date,
+            end_date=end_date,
             custom_prompt=request.form.get("custom_prompt"),
             custom_explanation=request.form.get("custom_explanation"),
             custom_question=request.form.get("custom_question"),
@@ -81,12 +85,16 @@ def modify(picture_id):
     if photo_file:
         photo_file_url = upload_file_to_s3(photo_file, current_app.config["S3_BUCKET_NAME"], folder="pictures")
 
+    # 날짜 변환
+    start_date = datetime.strptime(request.form.get("start_date"), '%Y-%m-%d %H:%M')
+    end_date = datetime.strptime(request.form.get("end_date"), '%Y-%m-%d %H:%M')
+
     try:
         picture.name = request.form.get("name")
         picture.artist = request.form.get("artist")
         picture.gallery = request.form.get("gallery")
-        picture.start_date = request.form.get("start_date")
-        picture.end_date = request.form.get("end_date")
+        picture.start_date = start_date
+        picture.end_date = end_date
         picture.custom_explanation = request.form.get("custom_explanation")
         picture.custom_question = request.form.get("custom_question")
         picture.picture_photo = photo_file_url
