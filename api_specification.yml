@@ -209,6 +209,57 @@ paths:
                 type: string
                 example: "picture_id"
 
+# 채팅 요약 API 명세
+chat/summary:
+  post:
+    tags:
+      - "Chat"
+    summary: "채팅 데이터를 추출하여 요약한 뒤, 5개의 감성적인 문장과 명언을 반환"
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: chat
+        description: "채팅 데이터를 기반으로 감성적인 문장과 명언 5개를 생성합니다. receiver_id는 요약할 채팅을 받은 사람의 ID입니다."
+        required: true
+        schema:
+          type: object
+          properties:
+            receiver:
+              type: integer
+              example: 2
+          required:
+            - receiver
+    responses:
+      "201":
+        description: "채팅 요약 성공"
+        schema:
+          type: object
+          properties:
+            sentences:
+              type: array
+              items:
+                type: string
+                example: "이 삶은 매일이 선물입니다."
+              description: "AI로 생성된 감성적인 문장 5개"
+      "400":
+        description: "채팅 요약 실패\nRequest에서 빠진 attribute명 또는 기타 오류"
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "receiver_id"
+      "500":
+        description: "서버 오류"
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Internal server error"
+
+
   # 작품 API 명세
   # 작품 정보 저장
   picture/create:
