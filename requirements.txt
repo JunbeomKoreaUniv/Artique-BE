@@ -1,4 +1,4 @@
-1alembic==1.14.0
+alembic==1.14.0
 aniso8601==9.0.1
 apispec==6.7.1
 attrs==24.2.0
