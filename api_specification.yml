@@ -10,7 +10,7 @@ tags:
 
 paths:
   #회원가입 API 명세
-  /signup:
+  admin/signup:
     post:
       tags:
         - "Auth"
@@ -70,7 +70,7 @@ paths:
                 error: "Email and nickname already exist"
 
   #로그인 API 명세
-  /login:
+  admin/login:
     post:
       tags:
         - "Auth"
@@ -121,7 +121,7 @@ paths:
                 example: "Invalid credentials"
 
   #로그인 API 명세
-  /refresh:
+  admin/refresh:
     post:
       tags:
         - "Auth"
