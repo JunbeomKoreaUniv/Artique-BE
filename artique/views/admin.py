@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 
@@ -6,7 +6,7 @@ from artique import db
 
 from artique.models import User
 
-bp = Blueprint('auth', __name__, url_prefix='/')
+bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @bp.route('/signup', methods=['POST'])
 def signUp():
@@ -39,7 +39,11 @@ def login():
         # 사용자 email을 identity로 설정하여 토큰 생성
         access_token = create_access_token(identity=data['email'])
         refresh_token = create_refresh_token(identity=data['email'])
-        return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+
+        response = make_response(jsonify({"message": "Login successful"}), 200)
+        response.headers["Access-Token"] = access_token
+        response.headers["Refresh-Token"] = refresh_token
+        return response
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
@@ -49,7 +53,10 @@ def login():
 def refresh():
     current_user_email = get_jwt_identity()
     new_access_token = create_access_token(identity=current_user_email)
-    return jsonify(access_token=new_access_token), 200
+
+    response = make_response(jsonify({"message": "Token refreshed"}), 200)
+    response.headers["Access-Token"] = new_access_token
+    return response
 
 @bp.route('/jwt-test', methods=['GET'])
 @jwt_required()
