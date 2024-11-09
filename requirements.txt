@@ -1,15 +1,59 @@
+1. flask 복습
+2. flask jwt로그인
+3. flask swagger 연동
+4. flask 외부 API 사용법 공부
+5. flask 배포 방법
+
+
+requirments.txt
+가상환경 설정, 배치파일
+
+[jwt]
+로그인시 클라이언트에 엑세스토큰, 리프레시토큰 둘 다 발급
+
+엑세스 토큰 만료돼서
+클라이언트에서 401응답 받으면
+/refesh로 리프레시토큰 헤더에 넣고 엑세스토큰 재발급 요청
+
+로그아웃시
+클라이언트에서 자체 토큰 삭제
+
+
+
+
 alembic==1.14.0
+aniso8601==9.0.1
+apispec==6.7.1
+attrs==24.2.0
 blinker==1.8.2
 click==8.1.7
 colorama==0.4.6
+flasgger==0.9.7.1
 Flask==3.0.3
+Flask-JWT-Extended==4.6.0
 Flask-Migrate==4.0.7
+Flask-RESTful==0.3.10
+flask-restx==1.3.0
+flask-smorest==0.45.0
 Flask-SQLAlchemy==3.1.1
 greenlet==3.1.1
+importlib_resources==6.4.5
 itsdangerous==2.2.0
 Jinja2==3.1.4
+jsonschema==4.23.0
+jsonschema-specifications==2024.10.1
 Mako==1.3.6
 MarkupSafe==3.0.2
+marshmallow==3.23.1
+mistune==3.0.2
+packaging==24.1
+PyJWT==2.9.0
+pytz==2024.2
+PyYAML==6.0.2
+referencing==0.35.1
+rpds-py==0.21.0
+six==1.16.0
 SQLAlchemy==2.0.36
 typing_extensions==4.12.2
+webargs==8.6.0
 Werkzeug==3.1.2
