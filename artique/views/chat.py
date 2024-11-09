@@ -25,12 +25,14 @@ def save_chat():
         db.session.add(new_chat)
         db.session.commit()
 
-        if data['message']:
+        prompting = "너가 고흐라고 생각하고 말해줘. 말투도 좀 옛날사람처럼 말해줘. " + data['message']
+
+        if prompting:
             # AI API 호출
             openai.api_key = os.getenv('OPENAI_API_KEY')
             response = openai.chat.completions.create(
                 model="gpt-4o-mini-2024-07-18",  # 사용할 모델 이름 (예: gpt-3.5-turbo 등)
-                messages=[{"role": "user", "content": data['message']}],
+                messages=[{"role": "user", "content": prompting}],
                 max_tokens=150
             )
 
