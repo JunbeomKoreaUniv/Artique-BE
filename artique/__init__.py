@@ -16,7 +16,7 @@ def create_app():
     app.config.from_object(config)
 
     # Enable CORS for all routes (allow all origins)
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True, expose_headers=["Authorization", "Access-Token", "Refresh-Token"])
 
     # Alternatively, to restrict to specific origins:
     # CORS(app, origins=["http://localhost:3000"])
