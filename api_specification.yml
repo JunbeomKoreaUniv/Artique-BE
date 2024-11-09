@@ -216,13 +216,15 @@ paths:
       tags:
         - "Picture"
       summary: "작품 정보 저장"
+      consumes:
+        - form-data
       description: "JWT 토큰을 통해 인증된 사용자만 데이터를 저장할 수 있음"
       security:
         - bearerAuth: [ ]
       parameters:
         - in: body
           name: picture
-          description: "작품 정보를 포함하는 객체\n작품의 name, artist, gallery, start_date, end_date, custom_explanation, custom_question, sound 등을 포함"
+          description: "작품 정보를 포함하는 객체\n작품의 name, artist, gallery, start_date, end_date, custom_explanation, custom_question, sound 등을 포함\n이 때 헤더에 엑세스토큰 넣어야함!!\n또한 custom_explanation은 not null임!!\n그리고 사진이 포함돼있으므로 json형태가 아니라 form-data형식으로 request해야함"
           required: true
           schema:
             type: object
@@ -249,6 +251,10 @@ paths:
                 format: date-time
                 description: "전시 종료 날짜"
                 example: "2024-12-10 18:00"
+              custom_prompt:
+                type: string
+                description: "커스텀 프롬프트"
+                example: "This is a prompt of the artwork."
               custom_explanation:
                 type: string
                 description: "커스텀 설명"
@@ -257,10 +263,10 @@ paths:
                 type: string
                 description: "커스텀 질문"
                 example: "What emotions does this artwork evoke?"
-              sound:
+              picture_photo:
                 type: string
-                description: "사운드 URL"
-                example: "https://example.com/sound.mp3"
+                description: "사진"
+                example: "파일 형태로 백에 전달 by form-data"
             required:
               - name
               - artist
@@ -269,7 +275,7 @@ paths:
               - end_date
               - custom_explanation
               - custom_question
-              - sound
+              - picture_photo
       responses:
         "201":
           description: "Picture created successfully"
@@ -306,12 +312,15 @@ paths:
       tags:
         - "Picture"
       summary: "기존 작품 정보 수정"
+      consumes:
+        - form-data
       description: "JWT 토큰을 통해 인증된 사용자만 기존의 Picture 데이터를 수정할 수 있음"
       security:
         - bearerAuth: [ ]
       parameters:
-        - in: path
-          name: picture_id
+        - in: body
+          name: picture
+          description: "작품 정보를 포함하는 객체\n작품의 name, artist, gallery, start_date, end_date, custom_explanation, custom_question, sound 등을 포함\n이 때 헤더에 엑세스토큰 넣어야함!!\n그리고 사진이 포함돼있으므로 json형태가 아니라 form-data형식으로 request해야함"
           required: true
           schema:
             type: integer
@@ -345,6 +354,10 @@ paths:
                 format: date-time
                 description: "전시 종료 날짜"
                 example: "2024-12-10 18:00"
+              custom_prompt:
+                type: string
+                description: "커스텀 프롬프트"
+                example: "This is a prompt of the artwork."
               custom_explanation:
                 type: string
                 description: "커스텀 설명"
@@ -353,10 +366,10 @@ paths:
                 type: string
                 description: "커스텀 질문"
                 example: "What emotions does this artwork evoke?"
-              sound:
+              picture_photo:
                 type: string
-                description: "사운드 URL"
-                example: "https://example.com/sound.mp3"
+                description: "사진"
+                example: "파일 형태로 백에 전달 by form-data"
             required:
               - name
               - artist
@@ -365,7 +378,7 @@ paths:
               - end_date
               - custom_explanation
               - custom_question
-              - sound
+              - picture_photo
       responses:
         "200":
           description: "Picture updated successfully"
