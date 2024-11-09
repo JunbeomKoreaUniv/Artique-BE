@@ -642,3 +642,21 @@ paths:
               error:
                 type: string
                 example: "Failed to upload to S3: [에러 메시지]"
+
+  # 모든 Picture 조회 API 명세
+  database/all_data:
+    get:
+      summary: "모든 데이터 조회"
+      security:
+        - bearerAuth: [ ]
+      responses:
+        "200":
+          description: "모든 데이터 조회 성공"
+          schema:
+            type: object
+            properties:
+              pictures:
+                type: array
+                items:
+                  type: object
+                  properties:

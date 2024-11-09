@@ -113,4 +113,3 @@ def get_all_sentences():
 
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
-        
