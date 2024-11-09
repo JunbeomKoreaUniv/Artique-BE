@@ -1,10 +1,11 @@
-from flask import Blueprint, jsonify, request, make_response
+from flask import Blueprint, jsonify, request, make_response, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 
 from artique import db
 
-from artique.models import User
+from artique.models import User, Picture
+from artique.s3upload import upload_file_to_s3
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -63,3 +64,36 @@ def refresh():
 def jwtTest():
     current_user_email = get_jwt_identity()
     return jsonify(logged_in_as=current_user_email), 200
+
+@bp.route('/upload_picture', methods=['POST'])
+def upload_picture():
+    print(request.files)
+    photo_file = request.files['picture_photo']
+    sound_file = request.files['sound']
+
+    print(photo_file, sound_file)
+
+    # S3에 파일 업로드
+    if photo_file:
+        photo_file_url = upload_file_to_s3(photo_file, current_app.config["S3_BUCKET_NAME"], folder="pictures")
+    if sound_file:
+        sound_file_url = upload_file_to_s3(sound_file, current_app.config["S3_BUCKET_NAME"], folder="sounds")
+
+    # 데이터베이스에 URL 저장
+    new_picture = Picture(
+        user_id=request.form.get("user_id"),  # user_id 전달 필요
+        name=request.form.get("name"),
+        artist=request.form.get("artist"),
+        gallery=request.form.get("gallery"),
+        start_date=request.form.get("start_date"),
+        end_date=request.form.get("end_date"),
+        custom_prompt=request.form.get("custom_prompt"),
+        custom_explanation=request.form.get("custom_explanation"),
+        custom_question=request.form.get("custom_question"),
+        sound=sound_file_url,
+        picture_photo=photo_file_url  # URL 저장
+    )
+    db.session.add(new_picture)
+    db.session.commit()
+
+    return jsonify({"message": "Picture uploaded successfully", "photo_url": photo_file_url, "sound_url": sound_file_url}), 200

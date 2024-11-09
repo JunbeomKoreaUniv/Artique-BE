@@ -27,7 +27,8 @@ class Picture(db.Model):
     custom_prompt = db.Column(db.Text)
     custom_explanation = db.Column(db.Text, nullable=False)
     custom_question = db.Column(db.Text)
-    sound = db.Column(db.Text)
+    sound = db.Column(db.String(500)) #음악파일은 외부 스토리지에 저장하고 url만 저장
+    picture_photo = db.Column(db.String(500)) #사진은 외부 스토리지에 저장하고 url만 저장
 
 
 class Chat(db.Model):
