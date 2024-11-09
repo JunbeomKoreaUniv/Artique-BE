@@ -1,0 +1,155 @@
+swagger: "2.0"
+info:
+  title: "정보대 해커톤 팀5 API"
+  version: "1.0.0"
+  description: "swagger 버전 문제로 RequestBody, Header가 표시가 되지 않습니다.\nParameter를 Request라고 생각하고 명세서 읽어주세요!"
+
+tags:
+  - name: "Auth"
+    description: "로그인 관련 API"
+
+paths:
+  #회원가입 API 명세
+  /signup:
+    post:
+      tags:
+        - "Auth"
+      summary: "회원가입"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: User
+          description: "User signup data"
+          required: true
+          schema:
+            type: object
+            properties:
+              nickname:
+                type: string
+                description: "닉네임"
+                example: "준범"
+              email:
+                type: string
+                example: "ku2soon@korea.ac.kr"
+              password:
+                type: string
+                example: "1234"
+            required:
+              - username
+              - email
+              - password
+      responses:
+        "200":
+          description: "sign up success"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "[유저명] Successfully signed up!"
+        "400":
+          description: "signup fail"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            email_error:
+              summary: "이메일 중복"
+              value:
+                error: "Email already exists"
+            nickname_error:
+              summary: "닉네임 중복"
+              value:
+                error: "Nickname already exists"
+            both_error:
+              summary: "이메일, 닉네임 모두 중복"
+              value:
+                error: "Email and nickname already exist"
+
+  #로그인 API 명세
+  /login:
+    post:
+      tags:
+        - "Auth"
+      summary: "User Login"
+      description: "로그인 성공시 엑세스,리프레시 토큰 반환"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: credentials
+          description: "User login data"
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: "The user's email address"
+                example: "ku2soon@korea.ac.kr"
+              password:
+                type: string
+                description: "The user's password"
+                example: "1234"
+            required:
+              - email
+              - password
+      responses:
+        "200":
+          description: "Login successful"
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+                description: "JWT authentication token"
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              refresh_token:
+                type: string
+                description: "JWT 리프레시 토큰"
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        "401":
+          description: "Invalid credentials"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Invalid credentials"
+
+  #로그인 API 명세
+  /refresh:
+    post:
+      tags:
+        - "Auth"
+      summary: "엑세스토큰 재발급 with 리프레시토큰"
+      description: "헤더에 리프레시토큰만 담아서 보내면 유효할 시 엑세스토큰 재발급"
+      consumes:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: "리프레시 토큰 (예: 'Bearer eyJhbGciOiJIU...')"
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "엑세스토큰 발급 성공"
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+                description: "JWT authentication token"
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        "401":
+          description: "엑세스토큰 발급 실패"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Invalid credentials"
