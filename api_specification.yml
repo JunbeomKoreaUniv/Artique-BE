@@ -160,7 +160,7 @@ paths:
                 type: string
                 example: "Invalid credentials"
 
-  #채팅 내역 저장 API 명세
+  # 채팅 내역 저장 API 명세
   chat/save:
     post:
       tags:
@@ -171,7 +171,11 @@ paths:
       parameters:
         - in: body
           name: chat
-          description: "채팅 내역\n picture_id에는 해당 채팅내역이 속하는 Picture테이블의 id\nsender, reciever에는 GPT면 0, 사용자면 1,2,3,4 등(incremental하게 증가)"
+          description: |
+            채팅 내역\n
+            - `picture_id`: 해당 채팅내역이 속하는 Picture테이블의 id
+            - `sender`: GPT일 경우 "AI", 사용자일 경우 해당 `nickname`
+            - `receiver`: GPT일 경우 "AI", 사용자일 경우 해당 `nickname`
           required: true
           schema:
             type: object
@@ -184,10 +188,10 @@ paths:
                 example: "이 작품의 시대적 배경에 대해 설명해줘"
               sender:
                 type: string
-                example: "1"
+                example: "user_nickname"  # 사용자 nickname
               receiver:
                 type: string
-                example: "2"
+                example: "AI"  # GPT일 경우 AI
             required:
               - picture_id
               - message

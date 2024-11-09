@@ -19,8 +19,8 @@ def save_chat():
         new_chat = Chat(
             picture_id=data['picture_id'],
             message=data['message'],
-            sender=data['sender'],
-            receiver=data['receiver']
+            sender=data['sender'], # sender: 사용자 nickname or "AI"
+            receiver=data['receiver'] # receiver: 사용자 nickname or "AI"
         )
         db.session.add(new_chat)
         db.session.commit()
