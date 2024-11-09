@@ -206,3 +206,218 @@ paths:
               error:
                 type: string
                 example: "picture_id"
+
+# 작품 API 명세
+/picture/create:
+  post:
+    tags:
+      - "Picture"
+    summary: "Create a new Picture"
+    description: "JWT 토큰을 통해 인증된 사용자만 데이터를 저장할 수 있음"
+    security:
+      - bearerAuth: [ ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "작품명"
+                example: "Starry Night"
+              artist:
+                type: string
+                description: "작가명"
+                example: "Vincent van Gogh"
+              gallery:
+                type: string
+                description: "전시회명"
+                example: "Museum of Modern Art"
+              start_date:
+                type: string
+                format: date-time
+                description: "전시 시작 날짜"
+                example: "2024-11-10 10:00"
+              end_date:
+                type: string
+                format: date-time
+                description: "전시 종료 날짜"
+                example: "2024-12-10 18:00"
+              custom_explanation:
+                type: string
+                description: "커스텀 설명"
+                example: "This is a detailed explanation of the artwork."
+              custom_question:
+                type: string
+                description: "커스텀 질문"
+                example: "What emotions does this artwork evoke?"
+              sound:
+                type: string
+                description: "사운드 URL"
+                example: "https://example.com/sound.mp3"
+            required:
+              - name
+              - artist
+              - gallery
+              - start_date
+              - end_date
+              - custom_explanation
+              - custom_question
+              - sound
+    responses:
+      "201":
+        description: "Picture created successfully"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Picture created successfully"
+                picture_id:
+                  type: integer
+                  example: 1
+      "401":
+        description: "Unauthorized"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Invalid or missing token"
+      "400":
+        description: "Validation error"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Validation error details"
+
+  #작품 수정
+  /picture/modify/{picture_id}:
+    post:
+      tags:
+        - "Picture"
+      summary: "Modify an existing Picture"
+      description: "JWT 토큰을 통해 인증된 사용자만 기존의 Picture 데이터를 수정할 수 있음"
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: picture_id
+          required: true
+          schema:
+            type: integer
+          description: "수정할 Picture의 ID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: "작품명"
+                  example: "Starry Night"
+                artist:
+                  type: string
+                  description: "작가명"
+                  example: "Vincent van Gogh"
+                gallery:
+                  type: string
+                  description: "전시회명"
+                  example: "Museum of Modern Art"
+                start_date:
+                  type: string
+                  format: date-time
+                  description: "전시 시작 날짜"
+                  example: "2024-11-10 10:00"
+                end_date:
+                  type: string
+                  format: date-time
+                  description: "전시 종료 날짜"
+                  example: "2024-12-10 18:00"
+                custom_explanation:
+                  type: string
+                  description: "커스텀 설명"
+                  example: "This is a detailed explanation of the artwork."
+                custom_question:
+                  type: string
+                  description: "커스텀 질문"
+                  example: "What emotions does this artwork evoke?"
+                sound:
+                  type: string
+                  description: "사운드 URL"
+                  example: "https://example.com/sound.mp3"
+              required:
+                - name
+                - artist
+                - gallery
+                - start_date
+                - end_date
+                - custom_explanation
+                - custom_question
+                - sound
+      responses:
+        "200":
+          description: "Picture updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Picture updated successfully"
+                  picture_id:
+                    type: integer
+                    example: 1
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid or missing token"
+        "403":
+          description: "Permission denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Permission denied"
+        "400":
+          description: "Validation error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Validation error details"
+        "404":
+          description: "Picture not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Picture not found"
