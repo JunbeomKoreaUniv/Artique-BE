@@ -16,7 +16,7 @@ class Picture(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # foreign key
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', name='fk_picture_user_id_user'))
     user = db.relationship('User', backref=db.backref('picture_set'))
 
     name = db.Column(db.String(200))
@@ -35,7 +35,7 @@ class Chat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     #foreign key
-    picture_id = db.Column(db.Integer, db.ForeignKey('picture.id'))
+    picture_id = db.Column(db.Integer, db.ForeignKey('picture.id', name='fk_chat_picture_id_picture'))
     picture = db.relationship('Picture', backref=db.backref('chat_set'))
 
     message = db.Column(db.Text)
