@@ -210,217 +210,209 @@ paths:
                 example: "picture_id"
 
   # 작품 API 명세
+  # 작품 정보 저장
   picture/create:
     post:
       tags:
         - "Picture"
       summary: "작품 정보 저장"
+      consumes:
+        - form-data
       description: "JWT 토큰을 통해 인증된 사용자만 데이터를 저장할 수 있음"
       security:
         - bearerAuth: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: "작품명"
-                  example: "Starry Night"
-                artist:
-                  type: string
-                  description: "작가명"
-                  example: "Vincent van Gogh"
-                gallery:
-                  type: string
-                  description: "전시회명"
-                  example: "Museum of Modern Art"
-                start_date:
-                  type: string
-                  format: date-time
-                  description: "전시 시작 날짜"
-                  example: "2024-11-10 10:00"
-                end_date:
-                  type: string
-                  format: date-time
-                  description: "전시 종료 날짜"
-                  example: "2024-12-10 18:00"
-                custom_explanation:
-                  type: string
-                  description: "커스텀 설명"
-                  example: "This is a detailed explanation of the artwork."
-                custom_question:
-                  type: string
-                  description: "커스텀 질문"
-                  example: "What emotions does this artwork evoke?"
-                sound:
-                  type: string
-                  description: "사운드 URL"
-                  example: "https://example.com/sound.mp3"
-              required:
-                - name
-                - artist
-                - gallery
-                - start_date
-                - end_date
-                - custom_explanation
-                - custom_question
-                - sound
+      parameters:
+        - in: body
+          name: picture
+          description: "작품 정보를 포함하는 객체\n작품의 name, artist, gallery, start_date, end_date, custom_explanation, custom_question, sound 등을 포함\n이 때 헤더에 엑세스토큰 넣어야함!!\n또한 custom_explanation은 not null임!!\n그리고 사진이 포함돼있으므로 json형태가 아니라 form-data형식으로 request해야함"
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "작품명"
+                example: "Starry Night"
+              artist:
+                type: string
+                description: "작가명"
+                example: "Vincent van Gogh"
+              gallery:
+                type: string
+                description: "전시회명"
+                example: "Museum of Modern Art"
+              start_date:
+                type: string
+                format: date-time
+                description: "전시 시작 날짜"
+                example: "2024-11-10 10:00"
+              end_date:
+                type: string
+                format: date-time
+                description: "전시 종료 날짜"
+                example: "2024-12-10 18:00"
+              custom_prompt:
+                type: string
+                description: "커스텀 프롬프트"
+                example: "This is a prompt of the artwork."
+              custom_explanation:
+                type: string
+                description: "커스텀 설명"
+                example: "This is a detailed explanation of the artwork."
+              custom_question:
+                type: string
+                description: "커스텀 질문"
+                example: "What emotions does this artwork evoke?"
+              picture_photo:
+                type: string
+                description: "사진"
+                example: "파일 형태로 백에 전달 by form-data"
+            required:
+              - name
+              - artist
+              - gallery
+              - start_date
+              - end_date
+              - custom_explanation
+              - custom_question
+              - picture_photo
       responses:
         "201":
           description: "Picture created successfully"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Picture created successfully"
-                  picture_id:
-                    type: integer
-                    example: 1
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Picture created successfully"
+              picture_id:
+                type: integer
+                example: 1
         "401":
           description: "Unauthorized"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid or missing token"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Invalid or missing token"
         "400":
           description: "Validation error"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Validation error details"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Validation error details"
 
 
-  #작품 수정
+  # 작품 수정
   picture/modify/{picture_id}:
     post:
       tags:
         - "Picture"
       summary: "기존 작품 정보 수정"
+      consumes:
+        - form-data
       description: "JWT 토큰을 통해 인증된 사용자만 기존의 Picture 데이터를 수정할 수 있음"
       security:
         - bearerAuth: [ ]
       parameters:
-        - in: path
-          name: picture_id
+        - in: body
+          name: picture
+          description: "작품 정보를 포함하는 객체\n작품의 name, artist, gallery, start_date, end_date, custom_explanation, custom_question, sound 등을 포함\n이 때 헤더에 엑세스토큰 넣어야함!!\n그리고 사진이 포함돼있으므로 json형태가 아니라 form-data형식으로 request해야함"
           required: true
           schema:
-            type: integer
-          description: "수정할 Picture의 ID"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: "작품명"
-                  example: "Starry Night"
-                artist:
-                  type: string
-                  description: "작가명"
-                  example: "Vincent van Gogh"
-                gallery:
-                  type: string
-                  description: "전시회명"
-                  example: "Museum of Modern Art"
-                start_date:
-                  type: string
-                  format: date-time
-                  description: "전시 시작 날짜"
-                  example: "2024-11-10 10:00"
-                end_date:
-                  type: string
-                  format: date-time
-                  description: "전시 종료 날짜"
-                  example: "2024-12-10 18:00"
-                custom_explanation:
-                  type: string
-                  description: "커스텀 설명"
-                  example: "This is a detailed explanation of the artwork."
-                custom_question:
-                  type: string
-                  description: "커스텀 질문"
-                  example: "What emotions does this artwork evoke?"
-                sound:
-                  type: string
-                  description: "사운드 URL"
-                  example: "https://example.com/sound.mp3"
-              required:
-                - name
-                - artist
-                - gallery
-                - start_date
-                - end_date
-                - custom_explanation
-                - custom_question
-                - sound
+            type: object
+            properties:
+              name:
+                type: string
+                description: "작품명"
+                example: "Starry Night"
+              artist:
+                type: string
+                description: "작가명"
+                example: "Vincent van Gogh"
+              gallery:
+                type: string
+                description: "전시회명"
+                example: "Museum of Modern Art"
+              start_date:
+                type: string
+                format: date-time
+                description: "전시 시작 날짜"
+                example: "2024-11-10 10:00"
+              end_date:
+                type: string
+                format: date-time
+                description: "전시 종료 날짜"
+                example: "2024-12-10 18:00"
+              custom_prompt:
+                type: string
+                description: "커스텀 프롬프트"
+                example: "This is a prompt of the artwork."
+              custom_explanation:
+                type: string
+                description: "커스텀 설명"
+                example: "This is a detailed explanation of the artwork."
+              custom_question:
+                type: string
+                description: "커스텀 질문"
+                example: "What emotions does this artwork evoke?"
+              picture_photo:
+                type: string
+                description: "사진"
+                example: "파일 형태로 백에 전달 by form-data"
+            required:
+              - name
+              - artist
+              - gallery
+              - start_date
+              - end_date
+              - custom_explanation
+              - custom_question
+              - picture_photo
       responses:
         "200":
           description: "Picture updated successfully"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Picture updated successfully"
-                  picture_id:
-                    type: integer
-                    example: 1
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Picture updated successfully"
+              picture_id:
+                type: integer
+                example: 1
         "401":
           description: "Unauthorized"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid or missing token"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Invalid or missing token"
         "403":
           description: "Permission denied"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Permission denied"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Permission denied"
         "400":
           description: "Validation error"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Validation error details"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Validation error details"
         "404":
           description: "Picture not found"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Picture not found"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Picture not found"
