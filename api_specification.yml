@@ -323,6 +323,13 @@ paths:
           description: "작품 정보를 포함하는 객체\n작품의 name, artist, gallery, start_date, end_date, custom_explanation, custom_question, sound 등을 포함\n이 때 헤더에 엑세스토큰 넣어야함!!\n그리고 사진이 포함돼있으므로 json형태가 아니라 form-data형식으로 request해야함"
           required: true
           schema:
+            type: integer
+          description: "수정할 Picture의 ID"
+        - in: body
+          name: picture
+          description: "수정할 작품의 정보\n각 필드는 수정할 작품의 새로운 값을 전달"
+          required: true
+          schema:
             type: object
             properties:
               name:
