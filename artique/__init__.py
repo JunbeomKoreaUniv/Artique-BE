@@ -28,9 +28,10 @@ def create_app():
     swagger = Swagger(app, template=api_specification)
 
     # 블루프린트
-    from .views import main_views, user_views, admin
+    from .views import main_views, user_views, admin, chat
     app.register_blueprint(main_views.bp)
     app.register_blueprint(user_views.bp)
     app.register_blueprint(admin.bp)
+    app.register_blueprint(chat.bp)
 
     return app
