@@ -52,5 +52,5 @@ class Sentence(db.Model):
     chat_id = db.Column(db.Integer, db.ForeignKey('chat.id', name='fk_sentence_chat_id_chat'))
     chat = db.relationship('Chat', backref=db.backref('sentence_set'))
 
-    receiver_id = db.Column(db.Integer)
+    receiver_id = db.Column(db.String(200))
     summary = db.Column(db.Text)
