@@ -348,6 +348,40 @@ paths:
                 type: string
                 example: "Internal server error"
 
+  # 모든 Sentence 조회 API 명세
+  chat/all_sentences:
+    get:
+      tags:
+        - "Chat"
+      summary: "모든 Sentence 데이터를 반환"
+      description: "데이터베이스에 저장된 모든 Sentence 데이터를 반환합니다."
+      responses:
+        "200":
+          description: "모든 Sentence 조회 성공"
+          schema:
+            type: object
+            properties:
+              sentences:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                      description: "Sentence의 고유 ID"
+                    summary:
+                      type: string
+                      example: "삶은 여행이며, 목적지가 아니라 여정이 중요하다."
+                      description: "AI가 생성한 감성적 문장"
+        "500":
+          description: "서버 오류"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Internal server error"
 
   # 작품 API 명세
   # 작품 정보 저장

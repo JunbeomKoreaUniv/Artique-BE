@@ -90,4 +90,24 @@ def summarize_chat():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
+
+
+# 모든 Sentence 데이터를 반환하는 API 엔드포인트
+@bp.route('/all_sentences', methods=['GET'])
+def get_all_sentences():
+    try:
+        # 모든 Sentence 데이터 조회
+        sentences = Sentence.query.all()
+
+        sentence_list = []
+        for sentence in sentences:
+            sentence_list.append({
+                "id": sentence.id,
+                "summary": sentence.summary
+            })
+
+        return jsonify({"sentences": sentence_list}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
         
