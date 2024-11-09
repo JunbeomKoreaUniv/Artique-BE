@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flasgger import Swagger
+from flask_cors import CORS  # Import CORS
 
 import config
 import yaml
@@ -13,6 +14,12 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
+
+    # Enable CORS for all routes (allow all origins)
+    CORS(app)
+
+    # Alternatively, to restrict to specific origins:
+    # CORS(app, origins=["http://localhost:3000"])
 
     # JWT
     jwt = JWTManager(app)
