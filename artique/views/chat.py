@@ -83,7 +83,7 @@ def summarize_chat():
         for sentence in sentences[2:-2]:
             new_sentence = Sentence(
                 receiver_id=receiver_id,
-                summary=sentence
+                summary=sentence[3:]
             )
             db.session.add(new_sentence)
         db.session.commit()
