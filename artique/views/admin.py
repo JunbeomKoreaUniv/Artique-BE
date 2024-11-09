@@ -97,3 +97,43 @@ def upload_picture():
     db.session.commit()
 
     return jsonify({"message": "Picture uploaded successfully", "photo_url": photo_file_url, "sound_url": sound_file_url}), 200
+
+
+@bp.route('/all_pictures', methods=['GET'])
+@jwt_required()
+def get_all_pictures():
+    try:
+        # 현재 로그인한 사용자의 이메일 가져오기
+        user_email = get_jwt_identity()
+
+        # User 테이블에서 해당 이메일을 가진 사용자 조회
+        user = User.query.filter_by(email=user_email).first()
+
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        # 해당 사용자가 업로드한 모든 Picture 조회
+        pictures = Picture.query.filter_by(user_id=user.id).all()
+
+        # Picture 데이터를 JSON 형식으로 변환
+        picture_list = []
+        for picture in pictures:
+            picture_list.append({
+                "id": picture.id,
+                "name": picture.name,
+                "artist": picture.artist,
+                "gallery": picture.gallery,
+                "start_date": picture.start_date.strftime('%Y-%m-%d %H:%M'),
+                "end_date": picture.end_date.strftime('%Y-%m-%d %H:%M'),
+                "custom_prompt": picture.custom_prompt,
+                "custom_explanation": picture.custom_explanation,
+                "custom_question": picture.custom_question,
+                "picture_photo": picture.picture_photo,
+                "sound": picture.sound,
+                "user_id": picture.user_id
+            })
+
+        return jsonify({"pictures": picture_list}), 200
+
+    except Exception as e:
+        return jsonify({"message": f"An error occurred: {str(e)}"}), 500
