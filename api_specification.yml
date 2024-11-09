@@ -5,15 +5,17 @@ info:
   description: "swagger 버전 문제로 RequestBody, Header가 표시가 되지 않습니다.\nParameter를 Request라고 생각하고 명세서 읽어주세요!"
 
 tags:
-  - name: "Auth"
-    description: "로그인 관련 API"
+  - name: "Admin"
+    description: "전시회측 로그인 관련 API"
+  - name: "Chat"
+    description: "채팅(감상자와 AI와의 대화내역) 관련 API"
 
 paths:
   #회원가입 API 명세
   admin/signup:
     post:
       tags:
-        - "Auth"
+        - "Admin"
       summary: "회원가입"
       consumes:
         - application/json
@@ -73,7 +75,7 @@ paths:
   admin/login:
     post:
       tags:
-        - "Auth"
+        - "Admin"
       summary: "User Login"
       description: "로그인 성공시 엑세스,리프레시 토큰 반환"
       consumes:
@@ -120,11 +122,11 @@ paths:
                 type: string
                 example: "Invalid credentials"
 
-  #로그인 API 명세
+  #엑세스 토큰 재발급 with 리프레시토큰 API 명세
   admin/refresh:
     post:
       tags:
-        - "Auth"
+        - "Admin"
       summary: "엑세스토큰 재발급 with 리프레시토큰"
       description: "헤더에 리프레시토큰만 담아서 보내면 유효할 시 엑세스토큰 재발급"
       consumes:
@@ -153,3 +155,54 @@ paths:
               error:
                 type: string
                 example: "Invalid credentials"
+
+  #채팅 내역 저장 API 명세
+  chat/save:
+    post:
+      tags:
+        - "Chat"
+      summary: "채팅내역 저장"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: chat
+          description: "채팅 내역\n picture_id에는 해당 채팅내역이 속하는 Picture테이블의 id\nsender, reciever에는 GPT면 0, 사용자면 1,2,3,4 등(incremental하게 증가)"
+          required: true
+          schema:
+            type: object
+            properties:
+              picture_id:
+                type: string
+                example: "1"
+              message:
+                type: string
+                example: "이 작품의 시대적 배경에 대해 설명해줘"
+              sender:
+                type: string
+                example: "1"
+              receiver:
+                type: string
+                example: "2"
+            required:
+              - picture_id
+              - message
+              - sender
+              - receiver
+      responses:
+        "201":
+          description: "채팅 내역 저장 성공"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Chat saved successfully"
+        "400":
+          description: "채팅 내역 저장 실패\nRequest에서 빠진 attribute명을 반환"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "picture_id"
