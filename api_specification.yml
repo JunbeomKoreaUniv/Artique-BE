@@ -11,6 +11,8 @@ tags:
     description: "채팅(감상자와 AI와의 대화내역) 관련 API"
   - name: "Picture"
     description: "작품 정보 관련 API"
+  - name: "Combined Picture"
+    description: "사진+글귀 파일 업로드 관련 API"
 
 paths:
   #회원가입 API 명세
@@ -158,7 +160,90 @@ paths:
                 type: string
                 example: "Invalid credentials"
 
-  #채팅 내역 저장 API 명세
+  # 모든 Picture 조회 API 명세
+  admin/all_pictures:
+    get:
+      tags:
+        - "Admin"
+      summary: "현재 로그인한 사용자의 모든 Picture 조회"
+      description: "현재 로그인한 사용자가 업로드한 모든 Picture를 조회합니다. JWT Access Token이 필요합니다."
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "모든 Picture 조회 성공"
+          schema:
+            type: object
+            properties:
+              pictures:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "Starry Night"
+                    artist:
+                      type: string
+                      example: "Vincent van Gogh"
+                    gallery:
+                      type: string
+                      example: "Museum of Modern Art"
+                    start_date:
+                      type: string
+                      format: date-time
+                      example: "2024-11-10 10:00"
+                    end_date:
+                      type: string
+                      format: date-time
+                      example: "2024-12-10 18:00"
+                    custom_prompt:
+                      type: string
+                      example: "This is a prompt of the artwork."
+                    custom_explanation:
+                      type: string
+                      example: "This is a detailed explanation of the artwork."
+                    custom_question:
+                      type: string
+                      example: "What emotions does this artwork evoke?"
+                    picture_photo:
+                      type: string
+                      example: "https://s3.amazonaws.com/yourbucket/pictures/starry_night.jpg"
+                    sound:
+                      type: string
+                      example: "https://s3.amazonaws.com/yourbucket/sounds/starry_night.mp3"
+                    user_id:
+                      type: integer
+                      example: 1
+        "401":
+          description: "Unauthorized - JWT 토큰 누락 또는 유효하지 않음"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Missing or invalid token"
+        "404":
+          description: "사용자를 찾을 수 없음"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "User not found"
+        "500":
+          description: "서버 오류"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "An error occurred: [에러 메시지]"
+
+  # 채팅 내역 저장 API 명세
   chat/save:
     post:
       tags:
@@ -169,7 +254,11 @@ paths:
       parameters:
         - in: body
           name: chat
-          description: "채팅 내역\n picture_id에는 해당 채팅내역이 속하는 Picture테이블의 id\nsender, reciever에는 GPT면 0, 사용자면 1,2,3,4 등(incremental하게 증가)"
+          description: |
+            채팅 내역\n
+            - `picture_id`: 해당 채팅내역이 속하는 Picture테이블의 id
+            - `sender`: GPT일 경우 "AI", 사용자일 경우 해당 `nickname`
+            - `receiver`: GPT일 경우 "AI", 사용자일 경우 해당 `nickname`
           required: true
           schema:
             type: object
@@ -182,10 +271,10 @@ paths:
                 example: "이 작품의 시대적 배경에 대해 설명해줘"
               sender:
                 type: string
-                example: "1"
+                example: "user_nickname"  # 사용자 nickname
               receiver:
                 type: string
-                example: "2"
+                example: "AI"  # GPT일 경우 AI
             required:
               - picture_id
               - message
@@ -208,6 +297,91 @@ paths:
               error:
                 type: string
                 example: "picture_id"
+
+ # 채팅 요약 API 명세
+  chat/summary:
+    post:
+      tags:
+        - "Chat"
+      summary: "채팅 데이터를 추출하여 요약한 뒤, 5개의 감성적인 문장과 명언을 반환"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: chat
+          description: "채팅 데이터를 기반으로 감성적인 문장과 명언 5개를 생성합니다. receiver_id는 요약할 채팅을 받은 사람의 ID입니다."
+          required: true
+          schema:
+            type: object
+            properties:
+              receiver:
+                type: integer
+                example: 2
+            required:
+              - receiver
+      responses:
+        "201":
+          description: "채팅 요약 성공"
+          schema:
+            type: object
+            properties:
+              sentences:
+                type: array
+                items:
+                  type: string
+                  example: "이 삶은 매일이 선물입니다."
+                description: "AI로 생성된 감성적인 문장 5개"
+        "400":
+          description: "채팅 요약 실패\nRequest에서 빠진 attribute명 또는 기타 오류"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "receiver_id"
+        "500":
+          description: "서버 오류"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Internal server error"
+
+  # 모든 Sentence 조회 API 명세
+  chat/all_sentences:
+    get:
+      tags:
+        - "Chat"
+      summary: "모든 Sentence 데이터를 반환"
+      description: "데이터베이스에 저장된 모든 Sentence 데이터를 반환합니다."
+      responses:
+        "200":
+          description: "모든 Sentence 조회 성공"
+          schema:
+            type: object
+            properties:
+              sentences:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                      description: "Sentence의 고유 ID"
+                    summary:
+                      type: string
+                      example: "삶은 여행이며, 목적지가 아니라 여정이 중요하다."
+                      description: "AI가 생성한 감성적 문장"
+        "500":
+          description: "서버 오류"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Internal server error"
 
   # 작품 API 명세
   # 작품 정보 저장
@@ -423,3 +597,48 @@ paths:
               error:
                 type: string
                 example: "Picture not found"
+
+
+  #사진+글귀 파일
+  combined_picture/upload_combined_picture:
+    post:
+      tags:
+        - "Combined Picture"
+      summary: "사진+글귀가 결합된 파일 업로드"
+      description: "사용자가 업로드한 사진+글귀 파일을 S3에 저장하고, 저장된 URL을 반환합니다."
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: combined_picture
+          description: "업로드할 사진+글귀가 결합된 파일"
+          required: true
+          type: file
+      responses:
+        "200":
+          description: "파일 업로드 성공"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Combined picture uploaded successfully"
+              photo_url:
+                type: string
+                example: "https://your-s3-bucket.s3.amazonaws.com/combined_pictures/your_uploaded_file.jpg"
+        "400":
+          description: "파일 미제공"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "No file provided"
+        "500":
+          description: "S3 업로드 실패"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Failed to upload to S3: [에러 메시지]"

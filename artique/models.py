@@ -42,3 +42,15 @@ class Chat(db.Model):
     message = db.Column(db.Text)
     sender = db.Column(db.String(200))
     receiver = db.Column(db.String(200))
+
+
+class Sentence(db.Model):
+    # Primary key
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Foreign key
+    chat_id = db.Column(db.Integer, db.ForeignKey('chat.id', name='fk_sentence_chat_id_chat'))
+    chat = db.relationship('Chat', backref=db.backref('sentence_set'))
+
+    receiver_id = db.Column(db.Integer)
+    summary = db.Column(db.Text)
