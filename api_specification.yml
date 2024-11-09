@@ -11,6 +11,8 @@ tags:
     description: "채팅(감상자와 AI와의 대화내역) 관련 API"
   - name: "Picture"
     description: "작품 정보 관련 API"
+  - name: "Combined Picture"
+    description: "사진+글귀 파일 업로드 관련 API"
 
 paths:
   #회원가입 API 명세
@@ -423,3 +425,48 @@ paths:
               error:
                 type: string
                 example: "Picture not found"
+
+
+  #사진+글귀 파일
+  combined_picture/upload_combined_picture:
+    post:
+      tags:
+        - "Combined Picture"
+      summary: "사진+글귀가 결합된 파일 업로드"
+      description: "사용자가 업로드한 사진+글귀 파일을 S3에 저장하고, 저장된 URL을 반환합니다."
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: combined_picture
+          description: "업로드할 사진+글귀가 결합된 파일"
+          required: true
+          type: file
+      responses:
+        "200":
+          description: "파일 업로드 성공"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Combined picture uploaded successfully"
+              photo_url:
+                type: string
+                example: "https://your-s3-bucket.s3.amazonaws.com/combined_pictures/your_uploaded_file.jpg"
+        "400":
+          description: "파일 미제공"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "No file provided"
+        "500":
+          description: "S3 업로드 실패"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Failed to upload to S3: [에러 메시지]"
