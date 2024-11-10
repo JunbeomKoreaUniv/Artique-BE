@@ -34,7 +34,7 @@ def save_chat():
             response = openai.chat.completions.create(
                 model="gpt-4o-mini-2024-07-18",  # 사용할 모델 이름 (예: gpt-3.5-turbo 등)
                 messages=[{"role": "user", "content": prompting}],
-                max_tokens=150
+                max_tokens=200
             )
 
             # AI 응답을 DB에 저장
