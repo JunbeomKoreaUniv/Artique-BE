@@ -12,7 +12,7 @@ python run.py
 ### <ERD>
 
 <p align="center">
-  <img src="이미지URL">
+  <img src="https://github.com/user-attachments/assets/56efb007-5568-4b0d-aeef-2e711186f364">
 </p>
 
 
