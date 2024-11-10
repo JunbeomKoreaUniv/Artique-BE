@@ -82,6 +82,7 @@ def summarize_chat():
         # AI 응답을 Sentence로 분리해서 DB에 저장
         sentences = gpt_response.split('\n')
         for sentence in sentences[2:-2]:
+            print(sentence)
             new_sentence = Sentence(
                 receiver_id=receiver_id,
                 summary=sentence[3:]
