@@ -9,9 +9,11 @@ load_dotenv()  # .env 파일 로드
 
 bp = Blueprint('chat', __name__, url_prefix='/chat')
 
+
 # Chat 데이터 저장하는 API 엔드포인트
 @bp.route('/save', methods=['POST'])
 def save_chat():
+    print(request)
     data = request.get_json()
 
     try:
@@ -19,21 +21,18 @@ def save_chat():
         new_chat = Chat(
             picture_id=data['picture_id'],
             message=data['message'],
-            sender=data['sender'], # sender: 사용자 nickname or "AI"
-            receiver=data['receiver'] # receiver: 사용자 nickname or "AI"
+            sender=data['sender'],  # sender: 사용자 nickname or "AI"
+            receiver=data['receiver']  # receiver: 사용자 nickname or "AI"
         )
         db.session.add(new_chat)
         db.session.commit()
 
-        prompting = "너가 고흐라고 생각하고 말해줘. 말투도 좀 옛날 사람처럼 말해줘. 고흐에 대해서 참고할 수 있는 이야기도 넣어줄게. 예를 들어, 고흐는 평생 동안 그림을 한 점도 팔지 못했지만, 그의 작품은 지금 세계에서 가장 비싼 작품들 중 하나가 되었단다. 그리고 고흐는 자주 외로움을 느꼈고, 아를에서 폴 고갱과 함께 지내던 시절에 그의 예술적 충돌도 있었지. 그런 이야기들이 도움이 될 거야. " + data['message']
-
-
-        if prompting:
+        if data['message']:
             # AI API 호출
             openai.api_key = os.getenv('OPENAI_API_KEY')
             response = openai.chat.completions.create(
                 model="gpt-4o-mini-2024-07-18",  # 사용할 모델 이름 (예: gpt-3.5-turbo 등)
-                messages=[{"role": "user", "content": prompting}],
+                messages=[{"role": "user", "content": data['message']}],
                 max_tokens=150
             )
 
@@ -55,6 +54,7 @@ def save_chat():
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
+
 # Chat 데이터 추출해서 요약한 뒤, 5개 Sentence를 저장 및 반환하는 API 엔드포인트
 @bp.route('/summary', methods=['POST'])
 def summarize_chat():
@@ -71,22 +71,29 @@ def summarize_chat():
         # AI API 호출
         openai.api_key = os.getenv('OPENAI_API_KEY')
         response = openai.chat.completions.create(
-                model="gpt-4o-mini-2024-07-18",  # 사용할 모델 이름 (예: gpt-3.5-turbo 등)
-                messages=[{"role": "user", "content": chat_text}],
-                max_tokens=300
-            )
+            model="gpt-4o-mini-2024-07-18",  # 사용할 모델 이름 (예: gpt-3.5-turbo 등)
+            messages=[{"role": "user", "content": chat_text}],
+            max_tokens=300
+        )
 
         # AI 응답을 DB에 저장
         gpt_response = response.choices[0].message.content.strip()
 
         # AI 응답을 Sentence로 분리해서 DB에 저장
         sentences = gpt_response.split('\n')
-        for sentence in sentences[2:-2]:
+
+        for i in range(2, len(sentences) - 2):  # 슬라이스 인덱스를 직접 사용
+            if ". " in sentences[i]:
+                sentences[i] = sentences[i].split(". ", 1)[1]  # 원본 리스트 수정
+
+            print(sentences[i])  # For debugging
+
             new_sentence = Sentence(
                 receiver_id=receiver_id,
-                summary=sentence[3:]
+                summary=sentences[i]
             )
             db.session.add(new_sentence)
+
         db.session.commit()
 
         return jsonify({'sentences': sentences[2:-2]}), 201
