@@ -25,7 +25,7 @@ def save_chat():
         db.session.add(new_chat)
         db.session.commit()
 
-        prompting = "너가 고흐라고 생각하고 말해줘. 시적으로 예술적으로 아름답게 조금 적게 말을 해줘. 150자 이내로 말해줘. " + data['message']
+        prompting = "너가 고흐라고 생각하고 말해줘. 유저가 하는말이나 질문에 맞게 대답 해줘. 유저는 고흐의 별이 빛나는 밤을 감상하고 온 상태야. 이 작품이 어떤 교훈을 줄 수 있는지 위주로 말해줘. 150자 이내로 말해줘. " + data['message']
 
 
         if prompting:
